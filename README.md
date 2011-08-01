@@ -9,15 +9,11 @@ section "Why sorry" below.
 Usage
 ====
 
-{{{
     sorry create mywebsite
-}}}
 
 creates a new website directory structure with some sample content.
 
-{{{
     cd mywebsite
     sorry
-}}}
 
 creates a deployable directory mywebsite/out
