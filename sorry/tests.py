@@ -1,8 +1,8 @@
 import unittest
 
 class ObjectsTest(unittest.TestCase):
-    def testBlocks(self):
-        from filters import MarkdownFilter, PygmentsFilter
+    def testBlocksMarkdown(self):
+        from filters import MarkdownFilter
         from objects import Block
     
 
@@ -20,6 +20,10 @@ this is [link][1] to google
 
         b = Block(test_text, [MarkdownFilter()])
         self.assertEqual(b.render(), test_output)
+
+    def testBlockPygments(self):
+        from filters import PygmentsFilter
+        from objects import Block
 
         # Testing PygmentsFilter
         test_text = """
