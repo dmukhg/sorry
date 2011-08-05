@@ -1,0 +1,31 @@
+A post is uniquely identified by a post id. Simply a number.
+A post has the following metadata:
+ > A title. Not necessarily unique. But hey!
+ > A publishing date. 
+ > A comma-separated list of tags.
+
+This is a pre-coding design. Will change radically.
+Proposed objects.
+ > Link : encapsulates a link. mainly used in templates
+          properties : href (String); title (String)
+
+ > Block : encapsulates a block of text that will have one filter
+           applied to it. Eg. a block of code. a block of markdown text
+
+ > Post  : encapsulates an ordered list of blocks and metadata that
+           constitutes a post. will have the uid prescribed by the system.
+ 
+ > Index : encapsulates an ordered list of posts.
+
+
+The base design template will have access to the following variables.
+
+ > sitename : String -> Name of the website
+ > headlinks : List<Link> -> List of links to present at the top.
+ > tagline  : String -> A tagline to describe or sarcastically incise
+                        the blog.
+ > footlinks : List<Link> -> Context sensitive list of links named newer and older.
+ 
+ > posts : List<Post> 
+ > title : Link
+

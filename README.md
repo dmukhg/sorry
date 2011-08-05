@@ -1,19 +1,18 @@
 What is sorry
 ======
 
-Sorry aims to be a configurable static HTML generator. The last one I
-wrote failed to pass tests. Instead of trying to sort it all out, I 
-decided to write a new one. For more details of why a new one, read the
-section "Why sorry" below.
+Sorry is a journal maintainer. It aims at providing a clean interface
+to sharing stuff. It tries to minimize the steps you have to go through
+simply to share a cool solution to a problem you were having. Or to 
+enable you to focus more on the writing than on the templating, committing,
+pushing etc.
+
 
 Usage
 ====
 
-    sorry create mywebsite
+Sorry assumes a lot. 
 
-creates a new website directory structure with some sample content.
-
-    cd mywebsite
-    sorry
-
-creates a deployable directory mywebsite/out
+* It assumes that one user maintains only one journal. He/She may tag
+  the post under various categories but it belongs to one journal only.
+  (this is done to ensure minimum time in cd'ing to a directory and stuff)
