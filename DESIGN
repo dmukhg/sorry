@@ -2,7 +2,7 @@ A post is uniquely identified by a post id. Simply a number.
 A post has the following metadata:
  > A title. Not necessarily unique. But hey!
  > A publishing date. 
- > A comma-separated list of tags.
+ > A comma-separated list of tags. / not anymore honey. PAH!
 
 This is a pre-coding design. Will change radically.
 Proposed objects.
@@ -14,18 +14,22 @@ Proposed objects.
 
  > Post  : encapsulates an ordered list of blocks and metadata that
            constitutes a post. will have the uid prescribed by the system.
+           > metadata attached to a post:
+            * uid
+            * date (already humanized date) only month and year.
+            * author (and that is it)
+
+            * draft: true/false. But this is not to be used inside the
+              Post class. Whoever is creating Post objects will just not 
+              create the Object for this.
+            
  
  > Index : encapsulates an ordered list of posts.
 
 
 The base design template will have access to the following variables.
 
- > sitename : String -> Name of the website
- > headlinks : List<Link> -> List of links to present at the top.
- > tagline  : String -> A tagline to describe or sarcastically incise
-                        the blog.
- > footlinks : List<Link> -> Context sensitive list of links named newer and older.
- 
+ > footlinks : previous and next links
  > posts : List<Post> 
  > title : Link
 

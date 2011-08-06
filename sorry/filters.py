@@ -18,6 +18,7 @@ def is_filter(apparent_filter):
 
 
 class MarkdownFilter:
+    # A filter that converts markdown text into html.
     def __init__(self):
         pass
 
@@ -26,6 +27,8 @@ class MarkdownFilter:
        return markdown.markdown(text)
 
 class PygmentsFilter:
+    # converts code into formatted html using the language argument
+    # passed in the constructor
     def __init__(self, language=None):
         self._language = language
 
@@ -35,8 +38,9 @@ class PygmentsFilter:
         from pygments import lexers
 
         try:
-            lexer = getattr(lexers, "%sLexer" %(self._language.capitalize()))
+            lexer = getattr(lexers, "%sLexer" %(self._language.capitalize()) )
         except AttributeError:
-            print "That is a weird language to code in: %" %(self._language)
+            print "That is a weird language to code in: %s" %(self._language)
+            raise SystemExit
 
         return highlight(text, lexer(), HtmlFormatter())

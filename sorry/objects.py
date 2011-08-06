@@ -1,3 +1,5 @@
+from filters import *
+
 class Link:
     # encapsulates a link type object
     def __init__(self, href, title):
@@ -39,6 +41,7 @@ class Block:
         self._filters = filter(is_filter, _filters)
         # this may seem confusing. It filters out any such TextFilters
         # that aren't quacking like a filter
+        # TODO this doesn't notify on a filter being a wrong filter
 
     def render(self):
         rendered = self._text 
@@ -47,4 +50,106 @@ class Block:
             # apply the filters in the order specified
 
         return rendered
+
+
+class Post:
+    # encapsulates a post mostly consists of an ordered list of blocks
+    # and some metadata the uid must be a number. This makes it easy
+    # to identify and order. No date-fu required.
+
+    def __init__(self, text, metadata):
+        self._text = text
+        self.feed_meta_data(metadata)
+
+    def decompose(self):
+        lines = self._text.split('\n')
+
+        def _internal_block(content):
+
+            """
+            Possible algorithm for decomposing:
+             > have an empty buffer.
+             > set buffer_type to default ( buffer_filter is Markdown or
+               Pygments)
+             > for each line
+                > if line has no marker, add to buffer.
+                > if line has ::code marker, yied and clear previous 
+                  buffer and set buffer_filter to the ::code language
+                > if line has ::endcode marker, yield and clear
+                  previous buffer set buffer_filter to default
+             > yield the final buffer
+            """
+            DEFAULT_FILTER = MarkdownFilter()
+
+            block_buffer = ""
+            block_filter = DEFAULT_FILTER
+
+            for line in content:
+                if not line.startswith("::"):
+                    block_buffer += line
+                if line.startswith("::code"):
+                    if not block_buffer == "":
+                        # sometimes, when a code block succeeds
+                        # another code block, we need to ensure that
+                        # an empty markdown block isn't yielded
+                        yield Block(block_buffer, [block_filter])
+                    block_buffer = ""
+                    language = line.rsplit(":", 1)[1]
+                    block_filter = PygmentsFilter(language)
+                if line.startswith("::endcode"):
+                    yield Block(block_buffer, [block_filter])
+                    block_buffer = ""
+                    block_filter = DEFAULT_FILTER 
+            
+            if not block_buffer == "":
+                # do not yield an empty block
+                yield Block(block_buffer, [block_filter])
+
+        
+        blocks = [ _ for _ in _internal_block(lines)]
+        return blocks
+
+    def render(self):
+        blocks = self.decompose()
+        rendered = ""
+
+        for block in blocks:
+            rendered += block.render()
+
+        return rendered
+
+    def feed_meta_data(self, metadata):
+        self.uid = metadata['uid']
+        self.date = metadata['date']
+        self.author = metadata['author']
+        self.title = metadata['title']
+
+
+class Page:
+    # Represents the contents of an actual page. Responsible for
+    # creating the Post objects for any page and also for rendering
+    # the final HTML. Will not do any file-handling. That should be
+    # handled by specialized functions. There will be however,
+    # considerable number of init arguments. There is a lot of
+    # metadata around.
+
+    def __init__(self, posts = [], title = "", footlinks = []):
+        # create the context right away.
+        from mako.runtime import Context
+        from StringIO import StringIO
+
+        self.buffered = StringIO()
+
+        self.context = Context(self.buffered,  
+                                posts = posts,
+                                title = title,
+                                footlinks = footlinks)
+
+    def render(template):
+        if template is None:
+            print "No template provided"
+            raise SystemExit
+
+        template.render(self.context)
+        return self.buffered.getvalue()
 
