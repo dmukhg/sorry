@@ -47,8 +47,11 @@ class ProcessTest(unittest.TestCase):
         import os 
         cwd = os.path.split(__file__)[0]
         self.test_dir = os.path.join(cwd, 't')
+        self.test_layout_dir = os.path.join(self.test_dir, 'layout')
+        self.test_layout_template = os.path.join(self.test_layout_dir, 'base.html')
         self.test_post_dir = os.path.join(self.test_dir, 'posts')
         self.test_post_file = os.path.join(self.test_post_dir, '1.md')
+        self.test_post_file2 = os.path.join(self.test_post_dir, '2.md')
 
     def testList_of_files(self):
         from processes import list_of_files
@@ -63,4 +66,27 @@ class ProcessTest(unittest.TestCase):
         from processes import post_from_file
 
         p = post_from_file(open(self.test_post_file))
+        
+        assert(isinstance(p, Post))
+        self.assertEqual(p.uid, '1')
+
+    def testRender_html(self):
+        from processes import render_html, post_from_file
+        from objects import Link
+        from mako.template import Template
+
+        p1 = post_from_file(open(self.test_post_file))     
+        p2 = post_from_file(open(self.test_post_file2))
+          
+        posts = [p1, p2]
+        footlinks = [Link("http://github.com/", "github"), Link("http://github.com/schatten/", "my github")]
+        template = Template(open(self.test_layout_template).read())
+        title = "Hello World"
+
+        self.assertEqual(render_html(posts, title, footlinks, template),
+                u'<html>\n    <head>\n        <title>Hello World | sitename.com</title>\n    </head>\n    <body>\n        <h1>Hello World</h1>\n\n            July, 2007\n            Post 1\n            <p>contents</p>\n            July, 2007\n            Post 2\n            <p>contents</p>\n\n        <a href="http://github.com/">github</a>\n        <a href="http://github.com/schatten/">my github</a>\n    </body>\n</html>\n'
+                )
+
+    def testIndices(self):
+        pass
         

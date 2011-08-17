@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <title>${title} | sitename.com</title>
+    </head>
+    <body>
+        <h1>${title}</h1>
+
+        % for post in posts:
+            ${post.date}
+            ${post.title}
+            ${post.render()}
+        % endfor
+
+        <a href="${footlinks[0].href}">${footlinks[0].title}</a>
+        <a href="${footlinks[1].href}">${footlinks[1].title}</a>
+    </body>
+</html>

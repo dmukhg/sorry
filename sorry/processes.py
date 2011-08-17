@@ -27,3 +27,34 @@ def post_from_file(fileobject):
     return Post(text, metadata)
 
 
+def render_html(posts, title, footlinks, template):
+    # takes a list of post objects a title, 2 footlinks and the
+    # template and converts it all into a full HTML string ready
+    # to be written to a file.
+
+    from mako.runtime import Context
+    from StringIO import StringIO
+    
+    buff = StringIO()
+    ctx = Context(buff, posts = posts, title = title, footlinks = footlinks)
+
+    template.render_context(ctx)
+
+    return buff.getvalue()
+
+
+def create_indices(directory):
+    # creates a dictionary of entire html pages that are indices. the
+    # key serves as the name of the file for eg, index or page-2
+    # while the values are complete HTML strings that can be written
+    # straight away to files.
+
+    # the directory argument must be a filepath to the directory
+    # containing the posts
+    
+    ls = list_of_files(directory)
+    posts = [ post_from_file(fobj) for fobj in ls ]
+
+    posts_count = len(posts)
+
+

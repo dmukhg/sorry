@@ -5,8 +5,6 @@ class Link:
     def __init__(self, href, title):
         self._href = href
         self._title = title
-        self.href = property(get_href, set_href)
-        self.title = property(get_title, set_title)
 
     def get_href(self):
         return self._href
@@ -14,6 +12,7 @@ class Link:
     def set_href(self, href):
         self._href = href
 
+    href = property(get_href, set_href)
 
     def get_title(self):
         return self._title
@@ -21,6 +20,7 @@ class Link:
     def set_title(self, title):
         self._title = title
 
+    title = property(get_title, set_title)
 
 class Block:
     # encapsulates a block of text that will have a single filter
