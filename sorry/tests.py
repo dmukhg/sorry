@@ -34,7 +34,7 @@ class ObjectsTest(unittest.TestCase):
         test_output.append(u'<div class="highlight"><pre><span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>\n</pre></div>\n')
         test_output.append(u'<div class="highlight"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">with_statement</span>\n</pre></div>\n')
 
-        p = Post(test_text, {'uid':1, 'date': "July, 2010", 'author': 'dmu', 'title': "Title 1"})
+        p = Post(test_text, {'uid':1, 'date': "July, 2010", 'author': 'dmu', 'title': "Title 1", 'draft' : "false"})
         blocks = p.decompose()
 
         print len(blocks)
@@ -123,3 +123,4 @@ class DispatchTest(unittest.TestCase):
         from dispatch import sitegen
 
         sitegen(self.test_dir)
+        # only checking for the abscece of errors. 

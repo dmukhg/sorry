@@ -4,6 +4,38 @@ from mako.template import Template
 from processes import *
 from objects import Link
 
+def cleardirectory(directory):
+    # clears the non-hidden contents of the supplied directory
+    import subprocess
+
+    try:
+        command = 'rm -rf %s/*' %directory
+        subprocess.call(command, shell=True)
+    except OSError:
+        print "Error executing %s" %command
+        raise SystemExit
+
+def mediacopy(source, destination):
+    # copies the contents of source directory to a destination
+    # directory. This creates the destination directory if required
+    # and then copies all the files. eg. mediacopy('a', 'b') will copy
+    # all files *within* a to a folder named 'b'
+    import subprocess
+    import os 
+
+    try:
+        os.makedirs(destination)
+        # try to create the destination directory
+    except OSError:
+        pass # Already exists. nothing to do
+    
+    try:
+        command = 'cp -rf %s/* %s' %(source, destination)
+        subprocess.call(command, shell=True)
+    except:
+        print "Error executing %s" %command
+        raise SystemExit
+
 def sitegen(directory, sitename = "Posts"):
     # sitegen takes a single directory path as an argument and spews
     # out complete deployable directories in the deploy sub-directory 
