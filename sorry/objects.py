@@ -123,6 +123,7 @@ class Post:
         self.date = metadata['date']
         self.author = metadata['author']
         self.title = metadata['title']
+        self.draft = metadata['draft']
 
 
 class Page:
