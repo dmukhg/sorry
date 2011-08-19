@@ -129,5 +129,5 @@ def sitegen(directory, sitename = "Posts"):
 
         c_footlinks = [c_link_prev, c_link_next]
 
-        fhandle.write(render_html(c_posts, "", c_footlinks, base_template))
+        fhandle.write(render_html(c_posts, post.title, c_footlinks, base_template))
         fhandle.close()
