@@ -86,7 +86,7 @@ class Post:
 
             for line in content:
                 if not line.startswith("::"):
-                    block_buffer += line
+                    block_buffer += '\n'+ line
                 if line.startswith("::code"):
                     if not block_buffer == "":
                         # sometimes, when a code block succeeds
