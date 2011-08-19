@@ -1,0 +1,101 @@
+import os
+from mako.template import Template
+
+from processes import *
+from objects import Link
+
+def sitegen(directory, sitename = "Posts"):
+    # sitegen takes a single directory path as an argument and spews
+    # out complete deployable directories in the deploy sub-directory 
+    # of the calling directory. Uses template 'base.html' from the
+    # layout sub-directory.
+
+    # declare and initialize the variables
+    deploy_dir = os.path.join(directory, 'deploy')
+    posts_dir = os.path.join(directory, 'posts')
+    layout_dir = os.path.join(directory, 'layout')
+
+    try:
+        os.makedirs(deploy_dir)
+        print "Created deploy dir in : %s" %deploy_dir
+        # create the deploy_dir in case it doesn't exist
+    except OSError:
+        # Already exists
+        print "Deploy dir already exists in : %s" %deploy_dir 
+    
+    try:
+        layout_file = open(os.path.join(layout_dir, 'base.html'))
+        base_template = Template(layout_file.read())
+        # try to open the base.html template
+    except IOError:
+        # There is no such file. 
+        print "No template named 'base.html' in %s" % layout_dir
+        raise SystemExit
+
+     
+    # initialize deploy sub-directories  
+    archive_dir = os.path.join(deploy_dir, 'archive')
+
+    try:
+        os.makedirs(archive_dir)
+        print "Created archive dir in : %s" %archive_dir
+        # create the archive_dir in case it doesn't exist
+    except OSError:
+        # Already exists
+        print "Archive dir already exists in : %s" %archive_dir
+    
+
+    """Begin generating indices"""
+    # generate the indices via the processes.create_indices function
+    index_map = create_indices(posts_dir, sitename, base_template)
+
+    for key in index_map:
+        # the return value of create_indices, if you remember is a
+        # dictionary. The keys of this dict are filenames like index,
+        # page-2 etc. the values of this dict are complete rendered
+        # HTML strings ready to be written to files.
+        filename = os.path.join(deploy_dir, '%s.html' %key)
+        fhandle = open(filename, 'w') # create a handle for the file
+
+        fhandle.write(index_map[key])
+        fhandle.close()
+        # write to and close the file handle
+        # with this, the generation of indices is done.
+
+    
+    """Begin Generating archive"""
+    # now, to generate the archive entries.
+    posts = [post_from_file(_) for _ in  list_of_files(posts_dir)]
+    # creates a list of posts using the list_of_files and
+    # post_from_file functions of the processes module.
+    posts.sort(key = lambda post : post.uid )
+    # this sorts the posts so that prev next links work like they
+    # should
+
+    for post in posts:
+        filename = os.path.join(archive_dir, "%s.html" %post.uid)
+        fhandle = open(filename, 'w')
+    
+        # in this block, the variables with names starting with c_ are
+        # contextual pertaining to the currently processed post file
+        c_posts = [post]
+        c_title = post.title
+        c_link_prev = Link("", "") # degenerate case
+        c_link_next = Link("", "") # degenerate case
+
+        if posts.index(post) != 0:
+            # this isn't the first post
+            prev_post = posts[posts.index(post) - 1]
+            prev_post_location = "%s.html" %prev_post.uid
+            c_link_prev = Link(prev_post_location, prev_post.title)
+
+        if posts.index(post) != ( len(posts) - 1 ):
+            # this isn't the last post
+            next_post = posts[posts.index(post) + 1]
+            next_post_location = "%s.html" %next_post.uid
+            c_link_next = Link(next_post_location, next_post.title)
+
+        c_footlinks = [c_link_prev, c_link_next]
+
+        fhandle.write(render_html(c_posts, "", c_footlinks, base_template))
+        fhandle.close()

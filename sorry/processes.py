@@ -43,7 +43,7 @@ def render_html(posts, title, footlinks, template):
     return buff.getvalue()
 
 
-def create_indices(directory):
+def create_indices(directory, sitename, template):
     # creates a dictionary of entire html pages that are indices. the
     # key serves as the name of the file for eg, index or page-2
     # while the values are complete HTML strings that can be written
@@ -51,10 +51,56 @@ def create_indices(directory):
 
     # the directory argument must be a filepath to the directory
     # containing the posts
+    from objects import Link 
     
+    posts_per_index = 3
+    # reflects the number of posts that will be in each index
+
     ls = list_of_files(directory)
     posts = [ post_from_file(fobj) for fobj in ls ]
+    posts.sort(key = lambda post : post.uid)
 
-    posts_count = len(posts)
+    remaining_post_count = len(posts)
+     
+    index_map = {}
+    
+    def _decompose(posts, posts_per_index):
+        while (posts):
+            yield posts[:posts_per_index]
+            posts = posts[posts_per_index:]
+     
+    k = "index"
+    i = 1
+    for few_posts in _decompose(posts, posts_per_index) :
+        remaining_post_count -= posts_per_index
+        # keeps track of the number of posts remaining in the post
+        # stack
 
+        # will now construct the links and title etc.
+        title = sitename 
+        template = template
+
+        # footlink generation requires knowledge of remaining posts
+        footlinks = [Link("", ""), Link("", "")] # degenerate case
+
+        if i == 1:
+            footlinks[0] = Link("", "")
+        elif i == 2:
+            footlinks[0] = Link("index", "newer")
+        else :
+            footlinks[0] = Link("page-%d" %(i-1), "newer")
+        if remaining_post_count > 0:
+            footlinks[1] = Link("page-%d" %(i+1), "older")
+
+        # footlink generation complete
+
+        if i > 1:
+            k = "page-%d" %i
+
+        index_map[k] = render_html(few_posts, title, footlinks, template)
+
+        # update keys for the index map
+        i += 1 
+
+    return index_map
 

@@ -7,7 +7,7 @@
 
         % for post in posts:
             ${post.date}
-            ${post.title}
+            <a href="/archive/${post.uid}.html">${post.title}</a>
             ${post.render()}
         % endfor
 

@@ -55,9 +55,13 @@ class ProcessTest(unittest.TestCase):
 
     def testList_of_files(self):
         from processes import list_of_files
+        import os
         
         l = list_of_files(self.test_post_dir)
-        self.assertEqual(len(l),2)
+        self.assertEqual(len(l),len(os.listdir(self.test_post_dir)))
+        # this test needs improvement. It merely checks that the
+        # number of objects returned is equal to the number of files
+        # in the directory.
 
         for _ in l:
             assert(isinstance(_, file))
@@ -84,9 +88,38 @@ class ProcessTest(unittest.TestCase):
         title = "Hello World"
 
         self.assertEqual(render_html(posts, title, footlinks, template),
-                u'<html>\n    <head>\n        <title>Hello World | sitename.com</title>\n    </head>\n    <body>\n        <h1>Hello World</h1>\n\n            July, 2007\n            Post 1\n            <p>contents</p>\n            July, 2007\n            Post 2\n            <p>contents</p>\n\n        <a href="http://github.com/">github</a>\n        <a href="http://github.com/schatten/">my github</a>\n    </body>\n</html>\n'
+                u'<html>\n    <head>\n        <title>Hello World | sitename.com</title>\n    </head>\n    <body>\n        <h1>Hello World</h1>\n\n            July, 2007\n            <a href="/archive/1.html">Post 1</a>\n            <p>contents</p>\n            July, 2007\n            <a href="/archive/2.html">Post 2</a>\n            <p>contents</p>\n\n        <a href="http://github.com/">github</a>\n        <a href="http://github.com/schatten/">my github</a>\n    </body>\n</html>\n'
                 )
 
     def testIndices(self):
-        pass
+        from processes import create_indices
+        from mako.template import Template
+
+        template = Template(open(self.test_layout_template).read())
+        sitename = "sitename"
+
+        index_map = create_indices(self.test_post_dir, sitename, template)
+
+        self.assertEqual(len(index_map), 3)
+        # this assumes that the post_per_index value is 3
+        self.assertEqual(index_map['page-2'],  
+                 u'<html>\n    <head>\n        <title>sitename | sitename.com</title>\n    </head>\n    <body>\n        <h1>sitename</h1>\n\n            July, 2007\n            <a href="/archive/4.html">Post 4</a>\n            <p>contents</p>\n            July, 2007\n            <a href="/archive/5.html">Post 5</a>\n            <p>contents</p>\n            July, 2007\n            <a href="/archive/6.html">Post 6</a>\n            <p>contents</p>\n\n        <a href="index">newer</a>\n        <a href="page-3">older</a>\n    </body>\n</html>\n'
+                 )
+
+
+class DispatchTest(unittest.TestCase):
+    def setUp(self):
+        import os, subprocess
+        cwd = os.path.split(__file__)[0]
+        self.test_dir = os.path.join(cwd, 't')
         
+        # clean the deploy directory
+        try:
+            subprocess.call('rm -rf %s/deploy' %self.test_dir)
+        except OSError:
+            print "File doesn't exist : %s/deploy" %self.test_dir
+
+    def testSitegen(self):
+        from dispatch import sitegen
+
+        sitegen(self.test_dir)
