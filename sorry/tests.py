@@ -103,7 +103,7 @@ class ProcessTest(unittest.TestCase):
         self.assertEqual(len(index_map), 3)
         # this assumes that the post_per_index value is 3
         self.assertEqual(index_map['page-2'],  
-                 u'<html>\n    <head>\n        <title>sitename | sitename.com</title>\n    </head>\n    <body>\n        <h1>sitename</h1>\n\n            July, 2007\n            <a href="/archive/4.html">Post 4</a>\n            <p>contents</p>\n            July, 2007\n            <a href="/archive/5.html">Post 5</a>\n            <p>contents</p>\n            July, 2007\n            <a href="/archive/6.html">Post 6</a>\n            <p>contents</p>\n\n        <a href="index">newer</a>\n        <a href="page-3">older</a>\n    </body>\n</html>\n'
+                 u'<html>\n    <head>\n        <title>sitename | sitename.com</title>\n    </head>\n    <body>\n        <h1>sitename</h1>\n\n            July, 2007\n            <a href="/archive/4.html">Post 4</a>\n            <p>contents</p>\n            July, 2007\n            <a href="/archive/3.html">Post 3</a>\n            <p>contents</p>\n            July, 2007\n            <a href="/archive/2.html">Post 2</a>\n            <p>contents</p>\n\n        <a href="index">newer</a>\n        <a href="page-3">older</a>\n    </body>\n</html>\n'
                  )
 
 

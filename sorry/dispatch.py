@@ -101,6 +101,7 @@ def sitegen(directory, sitename = "Posts"):
     # creates a list of posts using the list_of_files and
     # post_from_file functions of the processes module.
     posts.sort(key = lambda post : post.uid )
+    posts.reverse()
     # this sorts the posts so that prev next links work like they
     # should
 

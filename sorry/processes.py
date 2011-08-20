@@ -60,6 +60,7 @@ def create_indices(directory, sitename, template):
     posts = [ post_from_file(fobj) for fobj in ls ]
     posts = filter(lambda post : post.draft == 'false', posts)
     posts.sort(key = lambda post : post.uid)
+    posts.reverse()
 
     remaining_post_count = len(posts)
      
