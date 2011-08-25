@@ -58,7 +58,10 @@ def create_indices(directory, sitename, template):
 
     ls = list_of_files(directory)
     posts = [ post_from_file(fobj) for fobj in ls ]
+    # filter out the drafts
     posts = filter(lambda post : post.draft == 'false', posts)
+    # filter out the standalone pages
+    posts = filter(lambda post : not post.page, posts)
     posts.sort(key = lambda post : post.uid)
     posts.reverse()
 

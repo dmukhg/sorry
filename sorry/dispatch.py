@@ -67,6 +67,7 @@ def sitegen(directory, sitename = "Posts"):
      
     # initialize deploy sub-directories  
     archive_dir = os.path.join(deploy_dir, 'archive')
+    page_dir = os.path.join(deploy_dir, 'pages')
 
     try:
         os.makedirs(archive_dir)
@@ -75,7 +76,17 @@ def sitegen(directory, sitename = "Posts"):
     except OSError:
         # Already exists
         print "Archive dir already exists in : %s" %archive_dir
+
+    try:
+        os.makedirs(page_dir)
+        print "Created standalone post dir in : %s" %page_dir
+        # create the archive_dir in case it doesn't exist
+    except OSError:
+        # Already exists
+        print "Standalone post dir already exists in : %s" %page_dir
     
+
+
 
     """Begin generating indices"""
     # generate the indices via the processes.create_indices function
@@ -97,7 +108,8 @@ def sitegen(directory, sitename = "Posts"):
     
     """Begin Generating archive"""
     # now, to generate the archive entries.
-    posts = [post_from_file(_) for _ in  list_of_files(posts_dir)]
+    all_posts = [post_from_file(_) for _ in  list_of_files(posts_dir)]
+    posts = filter(lambda post : not post.page, all_posts)
     # creates a list of posts using the list_of_files and
     # post_from_file functions of the processes module.
     posts.sort(key = lambda post : post.uid )
@@ -130,5 +142,22 @@ def sitegen(directory, sitename = "Posts"):
 
         c_footlinks = [c_link_prev, c_link_next]
 
-        fhandle.write(render_html(c_posts, post.title, c_footlinks, base_template))
+        fhandle.write(render_html(c_posts, c_title, c_footlinks, base_template))
+        fhandle.close()
+
+    """ Begin generating standalones """
+    pages = filter(lambda post : post.page, all_posts)
+
+    for page in pages:
+        filename = os.path.join(page_dir, "%s.html" %page.uid)
+        fhandle = open(filename, 'w')
+        
+        # in this block, the variables with names starting with c_ are 
+        # contextual pertaining to the currently processed page
+        c_page = [page]
+        c_title = page.title
+        c_footlinks = [Link("", ""),
+                       Link("", "")]
+
+        fhandle.write(render_html(c_page, c_title, c_footlinks, base_template))
         fhandle.close()

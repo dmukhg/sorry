@@ -124,6 +124,11 @@ class Post:
         self.author = metadata['author']
         self.title = metadata['title']
         self.draft = metadata['draft']
+        try:
+            self.page = metadata['page']
+            self.page = True
+        except KeyError:
+            self.page = False
 
 
 class Page:
